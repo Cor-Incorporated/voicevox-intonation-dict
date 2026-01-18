@@ -1,6 +1,12 @@
 # Plans.md - タスク管理
 
-## 現在のフェーズ: Phase 9 - CI/CD 修正 & リリース準備 `cc:WIP`
+## 現在のフェーズ: 全フェーズ完了 🎉
+
+**プロジェクト完了日**: 2026-01-18
+
+---
+
+## Phase 9 - CI/CD 修正 & リリース準備 ✅ 完了
 
 **目標**: CI テストを通過させ、初回リリースを作成する
 
@@ -16,6 +22,7 @@
 | Phase 6 | UI改善 & VOICEVOXエディタ統合 | `.claude/archive/plans-phase6-complete.md` |
 | Phase 7 | ドキュメント・テスト整備 | `.claude/archive/plans-phase7-complete.md` |
 | Phase 8 | 配布準備（Docker, GitHub Actions） | 下記参照 |
+| Phase 9 | CI/CD 修正 & リリース準備 | 下記参照 |
 
 **テスト状況**: バックエンド 80+ tests / フロントエンド 15 tests
 
@@ -97,7 +104,7 @@
 
 ---
 
-## Phase 9: CI/CD 修正 & リリース準備 `cc:WIP`
+## Phase 9: CI/CD 修正 & リリース準備 ✅ 完了
 
 ### 問題点（CI 失敗の原因）
 
@@ -157,20 +164,42 @@
 
 ---
 
-### Task 9.5: 初回リリース作成 `cc:TODO`
+### Task 9.5: 初回リリース作成 ✅ 完了
 
 **手順**:
 - [x] CI が通過することを確認 ✅ (2026-01-18 全テスト成功)
-- [ ] タグをプッシュ（`git tag v1.0.0 && git push upstream v1.0.0`）
-- [ ] GitHub Releases が自動生成されることを確認
+- [x] タグをプッシュ ✅ `v1.0.0` (2026-01-18)
+- [x] GitHub Releases が自動生成 ✅ (Draft)
+
+**リリース URL**: https://github.com/Cor-Incorporated/voicevox-editor-extended/releases/tag/v1.0.0
+
+**アセット**:
+- `VOICEVOX-1.0.0-arm64.dmg` (macOS ARM64)
+- `VOICEVOX-1.0.0.dmg` (macOS x64)
+- `VOICEVOX.Web.Setup.1.0.0.exe` (Windows x64)
 
 ---
 
-## Phase 9 成功基準
+## Phase 9 成功基準 ✅ 達成
 
 1. **CI**: lint, unit-test, e2e-test（全プラットフォーム）が通過 ✅
-2. **ドキュメント**: 先方が README だけで完全にセットアップ可能
-3. **リリース**: GitHub Releases にバイナリが公開
+2. **ドキュメント**: 先方が README だけで完全にセットアップ可能 ✅
+3. **リリース**: GitHub Releases にバイナリが公開 ✅ (v1.0.0 公開完了)
+
+---
+
+## 📦 成果物
+
+| 成果物 | URL |
+|-------|-----|
+| **リリースページ** | https://github.com/Cor-Incorporated/voicevox-editor-extended/releases/tag/v1.0.0 |
+| **ローカルテストガイド** | `RELEASE_GUIDE.md` |
+| **バックエンドリポジトリ** | https://github.com/Cor-Incorporated/voicevox-intonation-dict |
+
+**ダウンロード可能なファイル**:
+- `VOICEVOX.Web.Setup.1.0.0.exe` (Windows x64)
+- `VOICEVOX-1.0.0-arm64.dmg` (macOS ARM64)
+- `VOICEVOX-1.0.0.dmg` (macOS x64)
 
 ---
 
