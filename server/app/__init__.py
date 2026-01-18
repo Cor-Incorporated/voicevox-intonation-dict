@@ -1,0 +1,1 @@
+# VOICEVOX Intonation Dictionary Extension

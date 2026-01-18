@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose:*)",
+      "Bash(docker:*)",
+      "Bash(curl:*)",
+      "Bash(cd server && python -m pytest:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pip:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  },
+  "model": "claude-opus-4-5-20251101"
+}

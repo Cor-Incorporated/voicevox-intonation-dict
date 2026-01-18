@@ -1,0 +1,64 @@
+services:
+  # VOICEVOX Engine（既存のDockerイメージを使用）
+  voicevox-engine:
+    image: voicevox/voicevox_engine:cpu-latest
+    container_name: voicevox-engine
+    platform: linux/amd64  # M4 Mac (ARM) でも動作させるためにamd64を指定
+    ports:
+      - "127.0.0.1:50021:50021"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50021/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # GPU版を使用する場合は以下をコメントアウト解除
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # 拡張辞書サービス（独自開発）
+  extension-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64  # M4 Mac (ARM) ネイティブ対応
+    container_name: voicevox-extension
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - VOICEVOX_ENGINE_URL=http://voicevox-engine:50021
+      - DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data
+      - ./server/app:/app/app  # 開発時ホットリロード用
+    depends_on:
+      voicevox-engine:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # VOICEVOX Editor（ブラウザ版 - Vue.js）
+  # 注意: voicevox-editor リポジトリが ../voicevox-editor にある前提
+  editor:
+    build:
+      context: ../voicevox-editor
+      dockerfile: Dockerfile.browser
+    container_name: voicevox-editor-web
+    ports:
+      - "127.0.0.1:3000:80"
+    depends_on:
+      - extension-server
+      - voicevox-engine
+    restart: unless-stopped
+    environment:
+      # nginx 経由で拡張辞書サーバーにプロキシ
+      - EXTENSION_SERVER_URL=http://extension-server:8000
+
+volumes:
+  dict-data:
