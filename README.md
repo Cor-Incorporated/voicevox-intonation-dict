@@ -2,11 +2,61 @@
 
 VOICEVOXの辞書機能を拡張し、イントネーション詳細（ピッチ・長さ）を保存できるツールです。
 
-## 概要
+## 🚀 クイックスタート（3ステップ）
 
-- **VOICEVOX Engine**: 既存のDockerイメージ（0.25.1）を使用
-- **拡張辞書サービス**: FastAPIベースの独自サービス
-- **フロントエンド**: React/Next.js（今後実装予定）
+### 1. バックエンドを起動
+
+```bash
+git clone https://github.com/Cor-Incorporated/voicevox-intonation-dict
+cd voicevox-intonation-dict
+docker compose up -d
+```
+
+### 2. Editor をダウンロード
+
+[GitHub Releases](https://github.com/Cor-Incorporated/voicevox-editor-extended/releases) から OS に合ったファイルをダウンロード:
+
+| OS | ファイル |
+|----|---------|
+| Windows | `voicevox-extended-windows-x64-*.exe` |
+| macOS (Intel) | `voicevox-extended-macos-x64-*.dmg` |
+| macOS (Apple Silicon) | `voicevox-extended-macos-arm64-*.dmg` |
+
+### 3. Editor を起動
+
+ダウンロードしたファイルを実行して、VOICEVOX Editor Extended を起動してください。
+
+**拡張辞書機能の使い方**:
+1. 設定メニュー → 拡張辞書ダイアログを開く
+2. 単語を入力して「発音取得」
+3. ピッチ・長さをスライダーで調整
+4. 「保存」で辞書に登録
+5. テキスト入力時に自動適用
+
+---
+
+## 📋 概要
+
+- **VOICEVOX Engine**: 公式 Docker イメージを使用（改変なし）
+- **Extension Server**: FastAPI ベースの拡張辞書サービス
+- **Editor**: Electron アプリ（拡張辞書機能を統合）
+
+## 🏗️ アーキテクチャ
+
+```
+┌──────────────────────────────────────────────────┐
+│ Docker Compose                                    │
+│ ┌─────────────────┐  ┌─────────────────┐         │
+│ │ VOICEVOX Engine │  │ Extension Server│         │
+│ │   (port 50021)  │  │   (port 8000)   │         │
+│ └─────────────────┘  └─────────────────┘         │
+└──────────────────────────────────────────────────┘
+                      ↑ HTTP API
+        ┌──────────────────────────────┐
+        │ VOICEVOX Editor Extended     │
+        │ (デスクトップアプリ)           │
+        └──────────────────────────────┘
+```
 
 ## システム要件
 
@@ -462,7 +512,38 @@ lsof -i :8000
 - 両アーキテクチャで動作確認済み
 - VOICEVOX Editor: Node.js 24.11.0 で ARM64 ネイティブ動作
 
-## トラブルシューティング
+## 🔧 トラブルシューティング
+
+### Editor が起動しない / 接続エラーが出る
+
+**原因**: バックエンド（Docker）が起動していない
+
+```bash
+# バックエンドの状態を確認
+docker compose ps
+
+# 起動していない場合
+docker compose up -d
+
+# ログでエラーを確認
+docker compose logs -f
+```
+
+### Editor が拡張辞書を認識しない
+
+**原因**: Extension Server に接続できていない
+
+```bash
+# Extension Server の動作確認
+curl http://127.0.0.1:8000/health
+
+# 期待される応答: {"status": "ok"}
+```
+
+**解決策**:
+1. Docker が起動していることを確認
+2. ポート 8000 が他のアプリに使用されていないか確認
+3. ファイアウォールで localhost:8000 がブロックされていないか確認
 
 ### コンテナが起動しない
 
@@ -477,21 +558,43 @@ docker compose up -d --build
 
 ### ポートが使用中
 
-他のプロセスが50021または8000ポートを使用している可能性があります。
+他のプロセスが 50021 または 8000 ポートを使用している可能性があります。
 
 ```bash
 # ポート使用状況を確認
 lsof -i :50021
 lsof -i :8000
+
+# 使用中のプロセスを終了（PID は lsof で確認）
+kill -9 <PID>
 ```
 
-### VOICEVOX Engineに接続できない
+### VOICEVOX Engine に接続できない
 
 ```bash
 # ヘルスチェック確認
 docker compose ps
 curl http://127.0.0.1:50021/version
 ```
+
+### GPU 版を使用したい
+
+`docker-compose.yml` を以下のように編集:
+
+```yaml
+services:
+  voicevox-engine:
+    image: voicevox/voicevox_engine:nvidia-latest  # nvidia に変更
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+```
+
+**注意**: NVIDIA GPU と CUDA ドライバが必要です。
 
 ## 参考リンク
 

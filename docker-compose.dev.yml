@@ -1,5 +1,5 @@
-# VOICEVOX 拡張辞書システム - 配布用 Docker Compose
-# 使い方: docker compose up -d
+# VOICEVOX 拡張辞書システム - 開発用 Docker Compose
+# 使い方: docker compose -f docker-compose.dev.yml up -d
 
 services:
   # VOICEVOX Engine（公式 Docker イメージ）
@@ -16,7 +16,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # 拡張辞書サーバー
+  # 拡張辞書サーバー（開発モード）
   extension-server:
     build:
       context: ./server
@@ -29,18 +29,26 @@ services:
       - DATA_DIR=/app/data
     volumes:
       - ./data:/app/data
+      - ./server/app:/app/app  # ホットリロード用
     depends_on:
       voicevox-engine:
         condition: service_healthy
     restart: unless-stopped
 
-# GPU版を使用する場合:
-# 1. image を voicevox/voicevox_engine:nvidia-latest に変更
-# 2. voicevox-engine に以下を追加:
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#              count: 1
-#              capabilities: [gpu]
+  # VOICEVOX Editor（ブラウザ版 - 開発時のみ）
+  # 注意: voicevox-editor リポジトリが ../voicevox-editor にある前提
+  editor:
+    build:
+      context: ../voicevox-editor
+      dockerfile: Dockerfile.browser
+    container_name: voicevox-editor-web
+    ports:
+      - "127.0.0.1:3000:80"
+    depends_on:
+      - extension-server
+      - voicevox-engine
+    restart: unless-stopped
+    environment:
+      - EXTENSION_SERVER_URL=http://extension-server:8000
+    profiles:
+      - browser  # docker compose --profile browser up で起動
