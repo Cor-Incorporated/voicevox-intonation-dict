@@ -160,7 +160,7 @@
 ### Task 9.5: 初回リリース作成 `cc:TODO`
 
 **手順**:
-- [ ] CI が通過することを確認
+- [x] CI が通過することを確認 ✅ (2026-01-18 全テスト成功)
 - [ ] タグをプッシュ（`git tag v1.0.0 && git push upstream v1.0.0`）
 - [ ] GitHub Releases が自動生成されることを確認
 
@@ -168,7 +168,7 @@
 
 ## Phase 9 成功基準
 
-1. **CI**: lint, unit-test が通過 ✅
+1. **CI**: lint, unit-test, e2e-test（全プラットフォーム）が通過 ✅
 2. **ドキュメント**: 先方が README だけで完全にセットアップ可能
 3. **リリース**: GitHub Releases にバイナリが公開
 
