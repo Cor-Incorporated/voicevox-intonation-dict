@@ -1,8 +1,8 @@
 # Plans.md - タスク管理
 
-## 現在のフェーズ: Phase 8 - 配布準備 ✅ 完了
+## 現在のフェーズ: Phase 9 - CI/CD 修正 & リリース準備 `cc:WIP`
 
-**目標**: 開発者が簡単にシステムを試せるようにする
+**目標**: CI テストを通過させ、初回リリースを作成する
 
 ---
 
@@ -15,6 +15,7 @@
 | Phase 5 | 辞書編集UI（React版） | `.claude/archive/plans-phase5-complete.md` |
 | Phase 6 | UI改善 & VOICEVOXエディタ統合 | `.claude/archive/plans-phase6-complete.md` |
 | Phase 7 | ドキュメント・テスト整備 | `.claude/archive/plans-phase7-complete.md` |
+| Phase 8 | 配布準備（Docker, GitHub Actions） | 下記参照 |
 
 **テスト状況**: バックエンド 80+ tests / フロントエンド 15 tests
 
@@ -91,6 +92,85 @@
 2. **Editor**: GitHub Actions でビルド設定完了（Releases は次回タグプッシュで作成） ✅
 3. **接続**: Editor → Extension Server → Engine の連携が動作 ✅（既存実装で確認済み）
 4. **ドキュメント**: README を読むだけでセットアップ完了 ✅
+
+---
+
+---
+
+## Phase 9: CI/CD 修正 & リリース準備 `cc:WIP`
+
+### 問題点（CI 失敗の原因）
+
+| Job | エラー内容 |
+|-----|-----------|
+| **lint** | `ExtendedDictionaryDialog.vue` のフォーマットエラー（カンマ、shorthand、イベント名） |
+| **unit-test** | `ExtendedDictionaryDialog.vue:250` で `TypeError: Cannot read properties of undefined (reading 'getters')` |
+| **e2e-test** | メニュー名変更による「読み方＆アクセント辞書」テスト失敗 |
+
+---
+
+### Task 9.1: lint エラー修正 ✅ 完了
+
+**修正内容**:
+- [x] `pnpm run lint --fix` で自動修正（35 件）
+- [x] 手動修正:
+  - `extendedDictApi.ts`: `response.json()` に型アサーション追加
+  - `ExtendedDictionaryPanel.vue`: `nextTick()` に `void` 追加
+  - `audio.ts`: `AudioQueryToJSON` の戻り値に型アサーション追加
+
+---
+
+### Task 9.2: unit-test エラー修正 ✅ 完了
+
+**修正内容**:
+- [x] `ExtendedDictionaryDialog.vue`: `store?.getters?.` で防御的処理
+- [x] テストファイル: `CharacterButton` をスタブ化（store 依存回避）
+- [x] テストファイル: `eslint-disable` コメント追加（`no-non-null-assertion`, `unbound-method`）
+
+**結果**: ExtendedDictionaryDialog テスト 15/15 通過
+
+---
+
+### Task 9.3: e2e テスト更新 ✅ 完了
+
+**修正内容**:
+- [x] `辞書ダイアログ.spec.ts`: 「読み方＆アクセント辞書」→「辞書管理」に更新
+  - `openDictDialog()` 関数
+  - テスト名
+  - ダイアログ閉じる時のヘッダーロケーター
+
+---
+
+### Task 9.4: ドキュメント補完 ✅ 完了
+
+**修正内容**:
+
+1. **voicevox-editor/README.md**:
+   - [x] 拡張版であることの説明を追加
+   - [x] イントネーション辞書機能の説明
+   - [x] クイックスタート手順
+   - [x] macOS での署名回避手順
+
+2. **voicevox-intonation-dict/README.md**:
+   - [x] 使い方を「辞書管理」→「イントネーション」タブに更新
+   - [x] macOS での署名回避手順を追加
+
+---
+
+### Task 9.5: 初回リリース作成 `cc:TODO`
+
+**手順**:
+- [ ] CI が通過することを確認
+- [ ] タグをプッシュ（`git tag v1.0.0 && git push upstream v1.0.0`）
+- [ ] GitHub Releases が自動生成されることを確認
+
+---
+
+## Phase 9 成功基準
+
+1. **CI**: lint, unit-test が通過 ✅
+2. **ドキュメント**: 先方が README だけで完全にセットアップ可能
+3. **リリース**: GitHub Releases にバイナリが公開
 
 ---
 
