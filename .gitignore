@@ -61,6 +61,9 @@ data/*.json
 .DS_Store
 Thumbs.db
 
+# Local review artifacts
+RELEASE_GUIDE.pdf
+
 # Reference directory (large external code)
 reference/
 
